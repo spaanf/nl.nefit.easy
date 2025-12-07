@@ -79,6 +79,8 @@ module.exports = class NefitEasyDevice extends Homey.Device {
     this.registerMultipleCapabilityListener([ Capabilities.CLOCK_PROGRAMME ], this.onSetClockProgramme   .bind(this), DEBOUNCE_RATE);
     this.registerMultipleCapabilityListener([ Capabilities.FIREPLACE_MODE ],  this.onSetFireplaceMode    .bind(this), DEBOUNCE_RATE);
     this.registerMultipleCapabilityListener([ Capabilities.HOLIDAY_MODE ],    this.onSetHolidayMode      .bind(this), DEBOUNCE_RATE);
+    this.registerMultipleCapabilityListener([ Capabilities.SHOWER_TIMER ],    this.onSetShowerTimer      .bind(this), DEBOUNCE_RATE);
+    this.registerMultipleCapabilityListener([ Capabilities.SHOWER_TIME ],     this.onSetShowerTime       .bind(this), DEBOUNCE_RATE);
   }
 
   // Get a (connected) instance of the Nefit Easy client.
@@ -109,10 +111,11 @@ module.exports = class NefitEasyDevice extends Homey.Device {
   // Update device status by querying the backend (which in
   // turn proxies the requests to the Nefit Easy device).
   async updateStatus() {
-    let [ status, pressure, holidayStatus ] = await Promise.all([
+    let [ status, pressure, holidayStatus, timerStatus ] = await Promise.all([
       this.client.status(),
       this.client.pressure(),
       this.client.holidayMode(),
+      this.client.showerTimer(),
     ]);
 
     // Update modes and temperatures.
@@ -133,6 +136,10 @@ module.exports = class NefitEasyDevice extends Homey.Device {
 
     if (holidayStatus) {
       this.setValue(Capabilities.HOLIDAY_MODE, holidayStatus.value === 'on');
+    }
+
+    if (timerStatus) {
+      this.setValue(Capabilities.SHOWER_TIMER, timerStatus.value === 'on');
     }
 
     // Update pressure.
@@ -248,6 +255,41 @@ module.exports = class NefitEasyDevice extends Homey.Device {
         return this.setValue(Capabilities.HOLIDAY_MODE, value);
       }
     });
+  }
+
+  // Enable/disable shower timer.
+  async onSetShowerTimer(data, opts) {
+    let value = data[Capabilities.SHOWER_TIMER];
+    this.log('Setting shower timer to', value ? 'on' : 'off');
+
+    // Retrieve current status from backend.
+    let status = await this.client.showerTimer();
+    let currentValue = status.value === 'on';
+
+    if (currentValue === value) {
+      this.log('(value matches current, not updating)');
+      return true;
+    }
+
+    return this.client.setShowerTimer(value).then(s => {
+      this.log('...status', s.status);
+      if (s.status === 'ok') {
+        return this.setValue(Capabilities.SHOWER_TIMER, value);
+      }
+    });
+  }
+
+  // Set shower time.
+  async onSetShowerTime(data, opts) {
+    let value = data[Capabilities.SHOWER_TIME];
+    this.log('Setting shower time to ', value, ' minutes');
+
+    return this.client.setShowerTime(value).then(s => {
+      this.log('...status',s.status);
+      if (s.status === 'ok') {
+        return this.setValue(Capabilities.SHOWER_TIME, value);
+      }
+    })
   }
 
   async startSyncing() {

@@ -20,6 +20,9 @@ module.exports = class NefitEasyDriver extends Homey.Driver {
     this._conditions = {
       operating_mode_matches : this.homey.flow.getConditionCard('operating_mode_matches').registerRunListener(async (args, state) => {
         return args.mode === state.value;
+      }),
+      shower_timer_matches : this.homey.flow.getConditionCard('shower_timer_matches').registerRunListener(async (args, state) => {
+        return args.timer === state.value;
       })
     }
   }

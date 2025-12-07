@@ -151,6 +151,16 @@
       "getable": true,
       "setable": true,
       "icon" : "/assets/capability-icons/holiday_mode.svg"
+    },
+    "shower_timer": {
+      "type": "boolean",
+      "title": {
+        "en": "Shower timer",
+        "nl": "Douche timer"
+      },
+      "getable": true,
+      "setable": true,
+      "icon": "/assets/capability-icons/holiday_mode.svg"
     }
   },
   "drivers": [
@@ -175,7 +185,8 @@
         "system_pressure",
         "alarm_pressure",
         "fireplace_mode",
-        "holiday_mode"
+        "holiday_mode",
+        "shower_timer"
       ],
       "capabilitiesOptions": {
         "target_temperature": {
@@ -238,6 +249,12 @@
           "title": {
             "en": "System pressure is too low/high",
             "nl": "Systeemdruk is te laag/hoog"
+          }
+        },
+        "shower_timer": {
+          "title": {
+            "en": "Shower timer",
+            "nl": "Douche timer"
           }
         }
       },
@@ -482,6 +499,44 @@
             ]
           }
         ]
+      },
+      {
+        "id": "shower_timer_matches",
+        "title": {
+          "en": "Shower timer !{{is|isn't}} active",
+          "nl": "Douche timer !{{is|is niet}} actief"
+        },
+        "titleFormatted": {
+          "en": "Shower timer !{{is|isn't}} [[value]]",
+          "nl": "Douche timer !{{is|is niet}} [[value]]"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=nefit_easy"
+          },
+          {
+            "name": "value",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "on",
+                "label": {
+                  "en": "on",
+                  "nl": "aan"
+                }
+              },
+              {
+                "id": "off",
+                "label": {
+                  "en": "off",
+                  "nl": "uit"
+                }
+              }
+            ]
+          }
+        ]
       }
     ],
     "actions" : [
@@ -596,6 +651,72 @@
             "name" : "device",
             "type" : "device",
             "filter": "driver_id=nefit_easy"
+          }
+        ]
+      },
+      {
+        "id" : "set_shower_timer",
+        "title" : {
+          "en" : "Set shower timer",
+          "nl" : "Zet douche timer"
+        },
+        "titleFormatted" : {
+          "en" : "Set shower timer [[value]]",
+          "nl" : "Zet douche timer [[value]]"
+        },
+        "args" : [
+          {
+            "name" : "value",
+            "type" : "dropdown",
+            "values" : [
+              {
+                "id" : "on",
+                "label" : {
+                  "en" : "on",
+                  "nl" : "aan"
+                }
+              },
+              {
+                "id" : "off",
+                "label" : {
+                  "en" : "off",
+                  "nl" : "uit"
+                }
+              }
+            ]
+          },
+          {
+            "name" : "device",
+            "type" : "device",
+            "filter" : "driver_id=nefit_easy"
+          }
+        ]
+      },
+      {
+        "id" : "set_shower_time",
+        "title" : {
+          "en" : "Shower time",
+          "nl" : "Douche tijd"
+        },
+        "titleFormatted" : {
+          "en" : "Set time of shower timer to [[time]] minutes",
+          "nl" : "Zet de douche timer op [[time]] minuten"
+        },
+        "args" : [
+          {
+            "name" : "time",
+            "type" : "number",
+            "placeholder" : {
+              "en" : "minutes",
+              "nl" : "minuten"
+            },
+            "min" : 5,
+            "step" : 1
+          },
+          {
+            "name" : "device",
+            "type" : "device",
+            "filter" : "driver_id=nefit_easy"
           }
         ]
       }
