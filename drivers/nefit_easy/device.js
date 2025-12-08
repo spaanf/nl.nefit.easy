@@ -29,6 +29,11 @@ module.exports = class NefitEasyDevice extends Homey.Device {
       await this.removeCapability('thermostat_mode').catch(e => this.error(e));
     }
 
+    // Add 'shower timer' capability.
+    if (! this.hasCapability('shower_timer')) {
+      await this.addCapability('shower_timer');
+    }
+
     // Instantiate client for this device.
     await this.setUnavailable(this.homey.__('device.connecting'));
     try {
