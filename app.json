@@ -160,7 +160,7 @@
       },
       "getable": true,
       "setable": true,
-      "icon": "/assets/capability-icons/holiday_mode.svg"
+      "icon": "/assets/capability-icons/system_pressure.svg"
     }
   },
   "drivers": [
