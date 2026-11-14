@@ -143,7 +143,11 @@ module.exports = class NefitEasyDevice extends Homey.Device {
     }
 
     if (timerStatus) {
-      this.setValue(Capabilities.SHOWER_TIMER, timerStatus.value === 'on');
+      if ((timerStatus.value === "on") !== this.getCapabilityValue(Capabilities.SHOWER_TIMER)) {
+        // Timer state changed, update value and trigger flow card
+        this.setValue(Capabilities.SHOWER_TIMER, timerStatus.value === 'on');
+        this.driver._triggers[Capabilities.SHOWER_TIMER].trigger(this, [ Capabilities.SHOWER_TIMER ]);
+      }
     }
 
     // Update pressure.
@@ -275,6 +279,9 @@ module.exports = class NefitEasyDevice extends Homey.Device {
       return true;
     }
     
+    // Timer state changed, trigger flow card
+    this.driver._triggers[Capabilities.SHOWER_TIMER].trigger(this, [ Capabilities.SHOWER_TIMER ]);
+
     return this.client.setShowerTimer(value).then(s => {
       this.log('...status:', s.status);
       if (s.status === 'ok') {

@@ -15,6 +15,7 @@ module.exports = class NefitEasyDriver extends Homey.Driver {
       [ Capabilities.OPERATING_MODE ] : this.homey.flow.getDeviceTriggerCard('operating_mode_changed'),
       [ Capabilities.PRESSURE ]       : this.homey.flow.getDeviceTriggerCard('system_pressure_changed'),
       [ Capabilities.ALARM_PRESSURE ] : this.homey.flow.getDeviceTriggerCard('alarm_pressure_active'),
+      [ Capabilities.SHOWER_TIMER ]   : this.homey.flow.getDeviceTriggerCard('shower_timer_changed'),
     }
 
     this._conditions = {
