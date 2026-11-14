@@ -151,6 +151,16 @@
       "getable": true,
       "setable": true,
       "icon" : "/assets/capability-icons/holiday_mode.svg"
+    },
+    "shower_timer": {
+      "type": "boolean",
+      "title": {
+        "en": "Shower timer",
+        "nl": "Douche timer"
+      },
+      "getable": true,
+      "setable": true,
+      "icon": "/assets/capability-icons/timer_mode.svg"
     }
   },
   "drivers": [
@@ -175,7 +185,8 @@
         "system_pressure",
         "alarm_pressure",
         "fireplace_mode",
-        "holiday_mode"
+        "holiday_mode",
+        "shower_timer"
       ],
       "capabilitiesOptions": {
         "target_temperature": {
@@ -238,6 +249,12 @@
           "title": {
             "en": "System pressure is too low/high",
             "nl": "Systeemdruk is te laag/hoog"
+          }
+        },
+        "shower_timer": {
+          "title": {
+            "en": "Shower timer",
+            "nl": "Douche timer"
           }
         }
       },

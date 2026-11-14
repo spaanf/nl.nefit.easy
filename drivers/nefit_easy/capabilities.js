@@ -9,4 +9,5 @@ module.exports = {
   ALARM_PRESSURE:  'alarm_pressure',
   FIREPLACE_MODE:  'fireplace_mode',
   HOLIDAY_MODE:    'holiday_mode',
+  SHOWER_TIMER:    'shower_timer',
 }

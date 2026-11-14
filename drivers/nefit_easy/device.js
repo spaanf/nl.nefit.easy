@@ -29,6 +29,11 @@ module.exports = class NefitEasyDevice extends Homey.Device {
       await this.removeCapability('thermostat_mode').catch(e => this.error(e));
     }
 
+    // Add 'shower timer' capability.
+    if (! this.hasCapability('shower_timer')) {
+      await this.addCapability('shower_timer');
+    }
+
     // Instantiate client for this device.
     await this.setUnavailable(this.homey.__('device.connecting'));
     try {
@@ -79,6 +84,7 @@ module.exports = class NefitEasyDevice extends Homey.Device {
     this.registerMultipleCapabilityListener([ Capabilities.CLOCK_PROGRAMME ], this.onSetClockProgramme   .bind(this), DEBOUNCE_RATE);
     this.registerMultipleCapabilityListener([ Capabilities.FIREPLACE_MODE ],  this.onSetFireplaceMode    .bind(this), DEBOUNCE_RATE);
     this.registerMultipleCapabilityListener([ Capabilities.HOLIDAY_MODE ],    this.onSetHolidayMode      .bind(this), DEBOUNCE_RATE);
+    this.registerMultipleCapabilityListener([ Capabilities.SHOWER_TIMER ],    this.onSetShowerTimer      .bind(this), DEBOUNCE_RATE);
   }
 
   // Get a (connected) instance of the Nefit Easy client.
@@ -109,10 +115,11 @@ module.exports = class NefitEasyDevice extends Homey.Device {
   // Update device status by querying the backend (which in
   // turn proxies the requests to the Nefit Easy device).
   async updateStatus() {
-    let [ status, pressure, holidayStatus ] = await Promise.all([
+    let [ status, pressure, holidayStatus, timerStatus ] = await Promise.all([
       this.client.status(),
       this.client.pressure(),
       this.client.holidayMode(),
+      this.client.showerTimer(),
     ]);
 
     // Update modes and temperatures.
@@ -133,6 +140,10 @@ module.exports = class NefitEasyDevice extends Homey.Device {
 
     if (holidayStatus) {
       this.setValue(Capabilities.HOLIDAY_MODE, holidayStatus.value === 'on');
+    }
+
+    if (timerStatus) {
+      this.setValue(Capabilities.SHOWER_TIMER, timerStatus.value === 'on');
     }
 
     // Update pressure.
@@ -246,6 +257,28 @@ module.exports = class NefitEasyDevice extends Homey.Device {
       this.log('...status:', s.status);
       if (s.status === 'ok') {
         return this.setValue(Capabilities.HOLIDAY_MODE, value);
+      }
+    });
+  }
+
+  // Enable/disable shower timer.
+  async onSetShowerTimer(data, opts) {
+    let value = data[Capabilities.SHOWER_TIMER];
+    this.log('setting shower timer to', value ? 'on' : 'off');
+
+    // Retrieve current status from backend.
+    let status = await this.client.showerTimer();
+    let currentValue = status.value === 'on';
+
+    if (currentValue === value) {
+      this.log('(value matches current, not updating)');
+      return true;
+    }
+    
+    return this.client.setShowerTimer(value).then(s => {
+      this.log('...status:', s.status);
+      if (s.status === 'ok') {
+        return this.setValue(Capabilities.SHOWER_TIMER, value);
       }
     });
   }
